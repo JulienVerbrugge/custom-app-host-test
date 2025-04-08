@@ -56,7 +56,6 @@ if [ -z "$API_TOKEN" ] || [ -z "$OWNER_ID" ] || [ -z "$ORG_NAME" ]; then
   exit 1
 fi
 
-
 # Make the POST request to create the organization
 ORG_RESPONSE=$(curl -s --location --request POST 'https://api.platform.sh/organizations' \
   --header "Content-Type: application/json" \
@@ -125,3 +124,43 @@ SUB_RESPONSE=$(curl -s --location "https://api.platform.sh/organizations/$ORG_ID
 # Optional: Print the full response or extract project ID if needed
 echo -ne "${GREEN}Subscription creation response: ${NC}"
 echo -ne "$SUB_RESPONSE"
+
+PROJECT_ID=$(echo "$RESPONSE" | jq -r '.activities[0].payload.project.id')
+echo "Project ID: $PROJECT_ID"
+
+# Prompt for project title
+echo -ne "${YELLOW}Enter your repository name: ${NC}"
+read REPOSITORY_NAME
+
+# Prompt for default branch
+echo -ne "${YELLOW}Enter your repository token: ${NC}"
+read REPOSITORY_TOKEN
+
+# Validate project input
+if [ -z "$REPOSITORY_NAME" ] || [ -z "$REPOSITORY_TOKEN" ]; then
+  echo "Repository name and token cannot be empty."
+  exit 1
+fi
+
+# Add GitHub integration
+INT_RESPONSE=$(curl --location "https://api.platform.sh/projects/yl72porbozqvq/integrations" \
+--header "Content-Type: application/json" \
+--header "Accept: application/json" \
+--header "Authorization: Bearer $ACCESS_TOKEN"  \
+--data "{
+	"type": "GitHub",
+	"fetch_branches": true,
+	"prune_branches": true,
+	"environment_init_resources": "parent",
+	"token": "$REPOSITORY_TOKEN",
+	//"base_url": "string", not needed for this case
+	"repository": "$REPOSITORY_NAME",
+	"build_pull_requests": true,
+	"build_draft_pull_requests": true,
+	"build_pull_requests_post_merge": true,
+	"pull_requests_clone_parent_data": true
+}")
+
+# Optional: Print the full response or extract project ID if needed
+echo -ne "${GREEN}Integration creation response: ${NC}"
+echo -ne "$INT_RESPONSE"
