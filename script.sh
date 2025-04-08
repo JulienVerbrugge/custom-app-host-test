@@ -126,7 +126,13 @@ echo -ne "${GREEN}Subscription creation response: ${NC}"
 echo -ne "$SUB_RESPONSE"
 
 PROJECT_ID=$(echo "$RESPONSE" | jq -r '.activities[0].payload.project.id')
-echo "Project ID: $PROJECT_ID"
+if [ "$PROJECT_ID" == "null" ] || [ -z "$PROJECT_ID" ]; then
+  echo -ne "${RED}Failed to create project ${NC}"
+  echo -ne "Response: $SUB_RESPONSE"
+  exit 1
+fi
+
+echo -ne "Project ID: $PROJECT_ID"
 
 # Prompt for project title
 echo -ne "${YELLOW}Enter your repository name: ${NC}"
