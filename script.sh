@@ -186,7 +186,7 @@ if [ -z "$REPOSITORY_NAME" ] || [ -z "$REPOSITORY_TOKEN" ]; then
 fi
 
 # Add GitHub integration
-INT_RESPONSE=$(curl --location "https://api.upsun.com/projects/yl72porbozqvq/integrations" \
+INT_RESPONSE=$(curl --location "https://api.upsun.com/projects/$PROJECT_ID/integrations" \
 --header "Content-Type: application/json" \
 --header "Accept: application/json" \
 --header "Authorization: Bearer $ACCESS_TOKEN"  \
@@ -206,4 +206,39 @@ INT_RESPONSE=$(curl --location "https://api.upsun.com/projects/yl72porbozqvq/int
 
 # Optional: Print the full response or extract project ID if needed
 echo -ne "${GREEN}Integration creation response: ${NC}"
+echo -ne "$INT_RESPONSE"
+
+##########################################################
+# Create a admin user invitation to the organization
+##########################################################
+
+# Prompt the user eamil
+echo -ne "${YELLOW}Enter the admin email: ${NC}"
+read ADMIN_EMAIL
+
+$ORG_ID
+
+INVIT_RESPONSE=$(curl --location "https://api.platform.sh/organizations/$ORG_ID/invitations" \
+--header "Content-Type: application/json" \
+--header "Accept: application/json" \
+--header "Authorization: Bearer $API_TOKEN" \
+--data-raw "{
+  "email": "$ADMIN_EMAIL",
+  "permissions": [
+    "admin"
+  ],
+  "force": true
+}")
+
+"state": "pending",
+
+$ADMIN_EMAIL=$(echo "$INVIT_RESPONSE" | jq -r '.email')
+if [ "$ADMIN_EMAIL" == "null" ] || [ -z "$ADMIN_EMAIL" ]; then
+  echo -ne "${RED}Failed to send invitation ${NC}"
+  echo -ne "Response: $SUB_RESPONSE"
+  exit 1
+fi
+
+# Optional: Print the full response or extract project ID if needed
+echo -ne "${GREEN}Invitation sent to $ADMIN_EMAIL${NC}"
 echo -ne "$INT_RESPONSE"
