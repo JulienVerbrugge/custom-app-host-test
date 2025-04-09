@@ -32,7 +32,7 @@ echo -ne "${GREEN}Access Token:${NC} $ACCESS_TOKEN\n"
 echo -ne "${YELLOW}Checking if your profile meet the requirement${NC}\n"
 
 # Check if user phone is verified
-PHONE_RESPONSE=$(curl -s --location --request POST 'https://api.platform.sh/me/phone' \
+PHONE_RESPONSE=$(curl -s --location --request POST 'https://api.upsun.com/me/phone' \
   --header "Content-Type: application/json" \
   --header "Accept: application/json" \
   --header "Authorization: Bearer $ACCESS_TOKEN")
@@ -68,14 +68,13 @@ if [[ "$ANSWER" == "y" || "$ANSWER" == "yes" ]]; then
   echo -ne "${YELLOW}Enter the name of the organisation (name must be lowercase, no space, no dash): ${NC}"
   read ORG_NAME
 
-  # Check if values are empty
   if [ -z "$API_TOKEN" ] || [ -z "$OWNER_ID" ] || [ -z "$ORG_NAME" ]; then
     echo "API token / owner ID / org name cannot be empty."
     exit 1
   fi
 
-  # Make the POST request to create the organization
-  ORG_RESPONSE=$(curl -s --location --request POST 'https://api.platform.sh/organizations' \
+  # POST request to create the organization
+  ORG_RESPONSE=$(curl -s --location --request POST 'https://api.upsun.com/organizations' \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --header "Authorization: Bearer $ACCESS_TOKEN" \
@@ -103,8 +102,9 @@ else
   # User want to use Akeneo organisation
   ##########################################################
 
-  echo -e "${GREEN}You chose to use Akeneo.${NC}"
-  exit 1
+  echo -e "${GREEN}You chose to use Akeneo, good choice !.${NC}"
+  ORG_ID="01JQBGXYH8WM53PZ9J1W8QYQ7H"
+
 fi
 
 ##########################################################
@@ -139,7 +139,7 @@ if [ "$ACCESS_TOKEN" == "null" ] || [ -z "$ACCESS_TOKEN" ]; then
 fi
 
 # Make the POST request to create the subscription
-SUB_RESPONSE=$(curl -s --location "https://api.platform.sh/organizations/$ORG_ID/subscriptions" \
+SUB_RESPONSE=$(curl -s --location "https://api.upsun.com/organizations/$ORG_ID/subscriptions" \
   --header "Content-Type: application/json" \
   --header "Accept: application/json" \
   --header "Authorization: Bearer $ACCESS_TOKEN" \
@@ -153,9 +153,6 @@ SUB_RESPONSE=$(curl -s --location "https://api.platform.sh/organizations/$ORG_ID
     \"storage\": 5120
   }")
 
-# Optional: Print the full response or extract project ID if needed
-echo -ne "${GREEN}Subscription creation response: ${NC}"
-echo -ne "$SUB_RESPONSE"
 
 PROJECT_ID=$(echo "$RESPONSE" | jq -r '.activities[0].payload.project.id')
 if [ "$PROJECT_ID" == "null" ] || [ -z "$PROJECT_ID" ]; then
@@ -163,6 +160,10 @@ if [ "$PROJECT_ID" == "null" ] || [ -z "$PROJECT_ID" ]; then
   echo -ne "Response: $SUB_RESPONSE"
   exit 1
 fi
+
+# Optional: Print the full response or extract project ID if needed
+echo -ne "${GREEN}Subscription creation response: ${NC}"
+echo -ne "$SUB_RESPONSE"
 
 echo -ne "Project ID: $PROJECT_ID"
 
@@ -185,7 +186,7 @@ if [ -z "$REPOSITORY_NAME" ] || [ -z "$REPOSITORY_TOKEN" ]; then
 fi
 
 # Add GitHub integration
-INT_RESPONSE=$(curl --location "https://api.platform.sh/projects/yl72porbozqvq/integrations" \
+INT_RESPONSE=$(curl --location "https://api.upsun.com/projects/yl72porbozqvq/integrations" \
 --header "Content-Type: application/json" \
 --header "Accept: application/json" \
 --header "Authorization: Bearer $ACCESS_TOKEN"  \
