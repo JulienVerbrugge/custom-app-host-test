@@ -196,7 +196,6 @@ INT_RESPONSE=$(curl --location "https://api.upsun.com/projects/$PROJECT_ID/integ
 	"prune_branches": true,
 	"environment_init_resources": "parent",
 	"token": "$REPOSITORY_TOKEN",
-	//"base_url": "string", not needed for this case
 	"repository": "$REPOSITORY_NAME",
 	"build_pull_requests": true,
 	"build_draft_pull_requests": true,
