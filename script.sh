@@ -156,7 +156,7 @@ SUB_RESPONSE=$(curl -s --location "https://api.upsun.com/organizations/$ORG_ID/s
   }")
 
 
-PROJECT_ID=$(echo "$RESPONSE" | jq -r '.activities[0].payload.project.id')
+PROJECT_ID=$(echo "$SUB_RESPONSE" | jq -r '.project_id')
 if [ "$PROJECT_ID" == "null" ] || [ -z "$PROJECT_ID" ]; then
   echo -ne "${RED}Failed to create project ${NC}"
   echo -ne "Response: $SUB_RESPONSE"
@@ -164,10 +164,8 @@ if [ "$PROJECT_ID" == "null" ] || [ -z "$PROJECT_ID" ]; then
 fi
 
 # Optional: Print the full response or extract project ID if needed
-echo -ne "${GREEN}Subscription creation response: ${NC}"
-echo -ne "$SUB_RESPONSE"
-
-echo -ne "Project ID: $PROJECT_ID"
+echo -ne "${GREEN}Subscription creation success ! ${NC}"
+echo -ne "${GREEN}Project ID: $PROJECT_ID ${NC}"
 
 ##########################################################
 # Create a new github integration
