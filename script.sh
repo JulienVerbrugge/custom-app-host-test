@@ -53,7 +53,7 @@ read OWNER_ID
 ##########################################################
 # Create a new organisation or use Akeneo POC organisation
 ##########################################################
-echo -ne "${YELLOW}Do you want to create a new organisation or use Akeneo POC ? (y/n): ${NC}"
+echo -ne "${YELLOW}Do you want to create a new organisation (y) or use Akeneo POC (n) ? (y/n): ${NC}"
 read ANSWER
 echo
 
@@ -95,6 +95,8 @@ if [[ "$ANSWER" == "y" || "$ANSWER" == "yes" ]]; then
   fi
 
   echo -ne "${GREEN}SUCCESS ! organisation ID: $ORG_ID ${NC}\n"
+  echo -ne "${YELLOW}Scirpt will stop now, you cannot go further without using the Akeneo organisation ${NC}"
+  exit 1
 
 else
 
