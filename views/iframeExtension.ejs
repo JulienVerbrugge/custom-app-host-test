@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Akeneo Iframe Extension</title>
+</head>
+<body>
+    <h1>Akeneo Iframe Extension</h1>
+    <button id="showTokenButton">Show JWT Token</button>
+    <pre id="tokenDisplay" style="display:none;"></pre>
+
+    <script>
+        document.getElementById('showTokenButton').addEventListener('click', function() {
+            // Simulate fetching a JWT token
+            const jwtToken = 'your.jwt.token.here'; // Replace with your actual JWT token
+            document.getElementById('tokenDisplay').textContent = jwtToken;
+            document.getElementById('tokenDisplay').style.display = 'block';
+        });
+    </script>
+</body>
+</html>

@@ -6,4 +6,9 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
+/* iframe extension */
+router.get('/iframe-extension', function(req, res, next) {
+  res.render('iframeExtension');
+});
+
 module.exports = router;
