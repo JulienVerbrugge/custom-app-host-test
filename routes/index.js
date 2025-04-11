@@ -8,7 +8,7 @@ router.get('/', function(req, res, next) {
 
 /* iframe extension */
 router.get('/iframe-extension', function(req, res, next) {
-  res.render('iframeExtension');
+  res.render('iframeExtension', { title: 'iframe extension' });
 });
 
 module.exports = router;
