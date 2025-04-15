@@ -1,27 +1,27 @@
 <h1>Akeneo Iframe Extension</h1>
-<button id="requestJwtButton">Request JWT Token</button>
-<button id="verifyJwtButton" style="display:none;">Verify JWT Token</button>
+<button id="requestJwtButton">Request JWT</button>
+<button id="verifyJwtButton" style="display:none;">Verify JWT</button>
 <pre id="tokenDisplay" style="display:none;"></pre>
 <pre id="decodedToken" style="display:none;"></pre>
 <pre id="verificationResult" style="display:none;"></pre>
 
 <script>
-    let jwtToken = '';
+    let jwt = '';
 
     document.getElementById('requestJwtButton').addEventListener('click', function() {
-        // Request the JWT token from the parent window
+        // Request the JWT from the parent window
         window.parent.postMessage({ type: 'request_jwt' }, "*");
     });
 
     // Listen for messages from the parent window
     window.addEventListener('message', function(event) {
         if (event.data.type === 'JWT_TOKEN') {
-            jwtToken = event.data.token;
-            document.getElementById('tokenDisplay').textContent = jwtToken;
+            jwt = event.data.token;
+            document.getElementById('tokenDisplay').textContent = jwt;
             document.getElementById('tokenDisplay').style.display = 'block';
 
-            // Decode the JWT token
-            const payload = jwtToken.split('.')[1]; // Get the payload part
+            // Decode the JWT
+            const payload = jwt.split('.')[1]; // Get the payload part
             const decodedPayload = JSON.parse(atob(payload)); // Decode base64
             document.getElementById('decodedToken').textContent = JSON.stringify(decodedPayload, null, 2);
             document.getElementById('decodedToken').style.display = 'block';
@@ -37,7 +37,7 @@
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ token: jwtToken })
+            body: JSON.stringify({ token: jwt })
         })
         .then(response => response.json())
         .then(data => {
