@@ -1,12 +1,29 @@
 <h1>Akeneo Iframe Extension</h1>
-<button id="showTokenButton">Show JWT Token</button>
+<button id="requestJwtButton">Request JWT Token</button>
 <pre id="tokenDisplay" style="display:none;"></pre>
+<pre id="decodedToken" style="display:none;"></pre>
 
 <script>
-    document.getElementById('showTokenButton').addEventListener('click', function() {
-        // Simulate fetching a JWT token
-        const jwtToken = 'your.jwt.token.here'; // Replace with your actual JWT token
-        document.getElementById('tokenDisplay').textContent = jwtToken;
-        document.getElementById('tokenDisplay').style.display = 'block';
-    });
+        document.getElementById('requestJwtButton').addEventListener('click', function() {
+            // Request the JWT token from the parent window
+            window.parent.postMessage({ type: 'request_jwt' }, "*");
+        });
+
+        // Listen for messages from the parent window
+        window.addEventListener('message', function(event) {
+            // Optionally, check the origin of the message for security
+            // if (event.origin !== 'YOUR_PARENT_ORIGIN') return;
+
+            if (event.data.type === 'JWT_TOKEN') {
+                const jwtToken = event.data.token;
+                document.getElementById('tokenDisplay').textContent = jwtToken;
+                document.getElementById('tokenDisplay').style.display = 'block';
+
+                // Decode the JWT token
+                const payload = jwtToken.split('.')[1]; // Get the payload part
+                const decodedPayload = JSON.parse(atob(payload)); // Decode base64
+                document.getElementById('decodedToken').textContent = JSON.stringify(decodedPayload, null, 2);
+                document.getElementById('decodedToken').style.display = 'block';
+            }
+        });
 </script>
