@@ -1,16 +1,16 @@
 <h1>Akeneo Iframe Extension</h1>
+
+<!-- get token -->
 <button id="requestJwtButton">Request JWT</button>
 <pre id="tokenDisplay" style="display:none;"></pre>
 <pre id="decodedToken" style="display:none;"></pre>
-<button id="verifyJwtButton" style="display:none;">Verify JWT</button>
-<pre id="verificationResult" style="display:none;"></pre>
-
-<!-- New input field for secret -->
+<!-- verify signature -->
 <div id="secretInputContainer" style="display:none;">
     <label for="secretInput">Enter Secret:</label>
     <input type="text" id="secretInput" placeholder="Enter your secret here" />
     <button id="submitSecretButton">Submit Secret</button>
 </div>
+<pre id="verificationResult" style="display:none;"></pre>
 
 <script>
     let jwt = '';
@@ -35,21 +35,13 @@
             document.getElementById('decodedToken').style.display = 'block';
 
             // Show the verify button and secret input
-            document.getElementById('verifyJwtButton').style.display = 'block';
+            // document.getElementById('verifyJwtButton').style.display = 'block';
             document.getElementById('secretInputContainer').style.display = 'block';
         }
     });
 
     document.getElementById('submitSecretButton').addEventListener('click', function() {
         secret = document.getElementById('secretInput').value;
-        if (secret) {
-            document.getElementById('verifyJwtButton').disabled = false; // Enable the verify button
-        } else {
-            alert('Please enter a secret.');
-        }
-    });
-
-    document.getElementById('verifyJwtButton').addEventListener('click', function() {
         fetch('/verify-token', {
             method: 'POST',
             headers: {
