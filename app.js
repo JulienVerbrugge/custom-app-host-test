@@ -15,7 +15,7 @@ app.set('view engine', 'ejs');
 
 // Middleware to set CSP header
 app.use((req, res, next) => {
-  res.set("Content-Security-Policy", "default-src 'self'; frame-ancestors 'self' graphql-integration.demo.cloud.akeneo.com; style-src 'self' 'unsafe-inline'");
+  res.set("Content-Security-Policy", "default-src 'self'; frame-ancestors 'self' graphql-integration.demo.cloud.akeneo.com; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'");
   next();
 });
 
