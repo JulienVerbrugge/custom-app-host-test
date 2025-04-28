@@ -14,10 +14,10 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 // Middleware to set CSP header
-app.use((req, res, next) => {
+/* app.use((req, res, next) => {
   res.set("Content-Security-Policy", "default-src 'self'; frame-ancestors 'self' graphql-integration.demo.cloud.akeneo.com; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'");
   next();
-});
+}); */
 
 app.use(logger('dev'));
 app.use(express.json());
