@@ -1,4 +1,12 @@
 import React, { useState } from 'react';
+import {
+    Button,
+    SectionTitle,
+    TextInput,
+    Helper,
+    Card,
+    Table
+  } from 'akeneo-design-system';
 
 const IframeExtension = () => {
   const [jwt, setJwt] = useState('');
@@ -38,30 +46,62 @@ const IframeExtension = () => {
   }, []);
 
   return (
-    <div>
-      <h1>Akeneo Iframe Extension</h1>
-      <button onClick={requestJwt}>Request JWT</button>
-      {jwt && (
-        <>
-          <pre>{jwt}</pre>
-          <pre>{JSON.stringify(decodedToken, null, 2)}</pre>
-          <div>
-            <label htmlFor="secretInput">Enter Secret:</label>
-            <input
-              type="text"
+    <div style={{ padding: '20px' }}>
+    <SectionTitle>
+      <SectionTitle.Title>Akeneo Iframe Extension</SectionTitle.Title>
+    </SectionTitle>
+
+        <Button onClick={requestJwt} level="primary">
+          Request JWT
+        </Button>
+        {jwt && (
+          <>
+            <Helper level="info">JWT Token:</Helper>
+            <pre style={{ background: '#f5f5f5', padding: '10px', borderRadius: '4px' }}>{jwt}</pre>
+
+            <Helper level="info">Decoded Token:</Helper>
+            <pre style={{ background: '#f5f5f5', padding: '10px', borderRadius: '4px' }}>
+              {JSON.stringify(decodedToken, null, 2)}
+            </pre>
+
+            <TextInput
               id="secretInput"
               value={secret}
               onChange={(e) => setSecret(e.target.value)}
               placeholder="Enter your secret here"
+              label="Secret"
+              required
             />
-            <button onClick={verifyToken}>Submit Secret</button>
-          </div>
-          {verificationResult && (
-            <pre>{JSON.stringify(verificationResult, null, 2)}</pre>
-          )}
-        </>
-      )}
-    </div>
+            <Button onClick={verifyToken} level="secondary" style={{ marginTop: '10px' }}>
+              Submit Secret
+            </Button>
+
+            {verificationResult && (
+              <>
+                <Helper level={verificationResult.valid ? 'success' : 'error'}>
+                  {verificationResult.valid ? 'Token is valid!' : 'Token is invalid!'}
+                </Helper>
+                <Table>
+                  <Table.Header>
+                    <Table.Row>
+                      <Table.Cell>Key</Table.Cell>
+                      <Table.Cell>Value</Table.Cell>
+                    </Table.Row>
+                  </Table.Header>
+                  <Table.Body>
+                    {Object.entries(verificationResult.decoded || {}).map(([key, value]) => (
+                      <Table.Row key={key}>
+                        <Table.Cell>{key}</Table.Cell>
+                        <Table.Cell>{value.toString()}</Table.Cell>
+                      </Table.Row>
+                    ))}
+                  </Table.Body>
+                </Table>
+              </>
+            )}
+          </>
+        )}
+  </div>
   );
 };
 
