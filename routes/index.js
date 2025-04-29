@@ -39,7 +39,7 @@ router.post('/generate-pdf', (req, res) => {
   const doc = new PDFDocument();
 
   // Define the output file path
-  const filePath = `./public/generated-pdf-${Date.now()}.pdf`;
+  const filePath = `./public/pdf/generated-pdf-${Date.now()}.pdf`;
 
   // Pipe the PDF to a file
   const writeStream = fs.createWriteStream(filePath);
