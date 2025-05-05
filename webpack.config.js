@@ -1,6 +1,7 @@
 const path = require('path');
 
 module.exports = {
+  mode: process.env.NODE_ENV || 'development',
   entry: './src/index.jsx',
   output: {
     path: path.resolve(__dirname, 'public/javascripts'),
@@ -14,6 +15,10 @@ module.exports = {
         use: {
           loader: 'babel-loader',
         },
+      },
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader'],
       },
     ],
   },

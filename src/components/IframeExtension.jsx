@@ -4,7 +4,6 @@ import {
     SectionTitle,
     TextInput,
     Helper,
-    Card,
     Table
   } from 'akeneo-design-system';
 
