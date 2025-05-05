@@ -1,0 +1,6 @@
+{
+  "watch": ["routes", "views", "public", "src"],
+  "ext": "js,json,jsx",
+  "ignore": ["node_modules"],
+  "exec": "npm run build && node ./bin/www"
+}
