@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "webpack",
-    "start": "NODE_ENV=production node ./bin/www",
+    "start": "npm run build && NODE_ENV=production node ./bin/www",
     "dev": "NODE_ENV=development nodemon ./bin/www"
   },
   "dependencies": {
