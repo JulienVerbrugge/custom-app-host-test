@@ -1,3 +1,4 @@
 node_modules
 public/pdf
 public/javascripts/bundle.js
+.env
