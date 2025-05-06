@@ -22,8 +22,12 @@ router.get('/iframe-extension', function(req, res, next) {
 
 // Route to verify JWT token
 router.post('/verify-token', function(req, res) {
-  const token = req.body.token; // Get the token from the request body
-  const secret = req.body.secret; // Get the secret from the request body
+  const token = req.body.token;
+  const secret = req.body.secret || process.env.IFRAME_EXTENSION_SECRET;
+
+  if (!secret) {
+    return res.status(500).json({ error: 'Secret is not defined' });
+  }
 
   jwt.verify(token, secret, (err, decoded) => {
       if (err) {
