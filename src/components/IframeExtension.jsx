@@ -86,22 +86,25 @@ const IframeExtension = () => {
               <Helper level={verificationResult.valid ? 'success' : 'error'}>
                 {verificationResult.valid ? 'Token is valid!' : 'Token is invalid!'}
               </Helper>
-              <Table>
-                <Table.Header>
-                  <Table.HeaderCell>Key</Table.HeaderCell>
-                  <Table.HeaderCell>Value</Table.HeaderCell>
-                </Table.Header>
-                <Table.Body>
-                  {Object.entries(verificationResult.decoded || {}).map(([key, value]) => (
-                    <Table.Row key={key}>
-                      <Table.Cell>{key}</Table.Cell>
-                      <Table.Cell style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        {value.toString()}
-                      </Table.Cell>
-                    </Table.Row>
-                  ))}
-                </Table.Body>
-              </Table>
+
+              {verificationResult.valid && (
+                <Table>
+                  <Table.Header>
+                    <Table.HeaderCell>Key</Table.HeaderCell>
+                    <Table.HeaderCell>Value</Table.HeaderCell>
+                  </Table.Header>
+                  <Table.Body>
+                    {Object.entries(verificationResult.decoded || {}).map(([key, value]) => (
+                      <Table.Row key={key}>
+                        <Table.Cell>{key}</Table.Cell>
+                        <Table.Cell style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {value.toString()}
+                        </Table.Cell>
+                      </Table.Row>
+                    ))}
+                  </Table.Body>
+                </Table>
+              )}
             </>
           )}
         </>
