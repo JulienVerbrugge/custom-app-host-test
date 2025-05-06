@@ -19,7 +19,7 @@ const IframeExtension = () => {
   const parseQueryParams = () => {
     const params = new URLSearchParams(window.location.search);
     const user = {
-      id: 2,
+      id: params.get('user[id]'),
       username: params.get('user[username]'),
       email: params.get('user[email]'),
       catalogLocale: params.get('user[catalog_locale]'),
@@ -45,15 +45,14 @@ const IframeExtension = () => {
     fetch('/verify-token', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({jwt}),
+      body: JSON.stringify({token: jwt}),
     })
       .then((response) =>  response.json())
       .then((data) => {
-
         setValidationSteps((prev) => ({...prev, tokenVerified: data.valid}));
-        setValidationSteps((prev) => ({...prev, userValidated: data.valid && decodedPayload?.id === userData.id}));
+        setValidationSteps((prev) => ({...prev, userValidated: data.valid && data.decoded.userId === userData.id}));
 
-        if (!data.valid || decodedPayload?.id !== userData.id) {
+        if (!data.valid || data.decoded.userId !== userData.id) {
           setErrorMessage('Token validation failed. User ID does not match or token is invalid.');
         }
       })
@@ -106,15 +105,15 @@ const IframeExtension = () => {
           <SectionTitle.Title>Validation Steps</SectionTitle.Title>
         </SectionTitle>
         <div style={{ marginTop: '20px' }}>
-          <Helper level={validationSteps.tokenRetrieved ? 'success' : 'info'}>
+          <Helper level={validationSteps.tokenRetrieved ? 'success' : 'error'}>
             {validationSteps.tokenRetrieved
               ? 'Token has been retrieved.'
-              : 'Waiting for token...'}
+              : 'Failed to retrieve token.'}
           </Helper>
-          <Helper level={validationSteps.tokenVerified ? 'success' : 'info'}>
+          <Helper level={validationSteps.tokenVerified ? 'success' : 'error'}>
             {validationSteps.tokenVerified
               ? 'Token has been verified.'
-              : 'Waiting for token verification...'}
+              : 'Token verification failed.'}
           </Helper>
           <Helper level={validationSteps.userValidated ? 'success' : 'error'}>
             {validationSteps.userValidated
@@ -126,7 +125,7 @@ const IframeExtension = () => {
               {errorMessage}
             </Helper>
           )}
-        </div>
+      </div>
       </div>
     </div>
   );
