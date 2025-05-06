@@ -50,7 +50,7 @@ const IframeExtension = () => {
         <SectionTitle.Title>Akeneo Iframe Extension</SectionTitle.Title>
       </SectionTitle>
 
-      <div style={{ marginTop: '20px' }}>        
+      <div style={{ marginTop: '20px', marginBottom: '20px' }}>        
         <Button onClick={requestJwt} level="primary">
           Request JWT
         </Button>
@@ -59,22 +59,25 @@ const IframeExtension = () => {
       {jwt && (
         <>
           <Helper level="info">JWT Token:</Helper>
-          <pre style={{ background: '#f5f5f5', padding: '10px', borderRadius: '4px' }}>{jwt}</pre>
+          <pre style={{ background: '#f5f5f5', padding: '10px', borderRadius: '4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {jwt}
+          </pre>
 
           <Helper level="info">Decoded Token:</Helper>
-          <pre style={{ background: '#f5f5f5', padding: '10px', borderRadius: '4px' }}>
+          <pre style={{ background: '#f5f5f5', padding: '10px', borderRadius: '4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {JSON.stringify(decodedToken, null, 2)}
           </pre>
 
           <TextInput
             id="secretInput"
             value={secret}
-            onChange={(e) => setSecret(e.target.value)}
+            onChange={(newValue) => setSecret(newValue)}
             placeholder="Enter your secret here"
             label="Secret"
             required
+            readOnly={false}
           />
-          <Button onClick={verifyToken} level="secondary" style={{ marginTop: '10px' }}>
+          <Button onClick={verifyToken} level="secondary" style={{ marginTop: '10px',marginBottom: '20px' }}>
             Submit Secret
           </Button>
 
@@ -85,16 +88,16 @@ const IframeExtension = () => {
               </Helper>
               <Table>
                 <Table.Header>
-                  <Table.Row>
-                    <Table.Cell>Key</Table.Cell>
-                    <Table.Cell>Value</Table.Cell>
-                  </Table.Row>
+                  <Table.HeaderCell>Key</Table.HeaderCell>
+                  <Table.HeaderCell>Value</Table.HeaderCell>
                 </Table.Header>
                 <Table.Body>
                   {Object.entries(verificationResult.decoded || {}).map(([key, value]) => (
                     <Table.Row key={key}>
                       <Table.Cell>{key}</Table.Cell>
-                      <Table.Cell>{value.toString()}</Table.Cell>
+                      <Table.Cell style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {value.toString()}
+                      </Table.Cell>
                     </Table.Row>
                   ))}
                 </Table.Body>
