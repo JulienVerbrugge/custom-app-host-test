@@ -1,8 +1,14 @@
 const express = require('express');
+require('dotenv').config();
 const router = express.Router();
 const PDFDocument = require('pdfkit');
+const path = require('path');
 const fs = require('fs');
+const axios = require('axios');
 const jwt = require('jsonwebtoken');
+const { getAkeneoToken } = require('../src/helpers/getAkeneoToken');
+const { getProductIdentifierFromUUID } = require('../src/helpers/getProductIdentifierFromUUID');
+const FormData = require('form-data');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -27,48 +33,43 @@ router.post('/verify-token', function(req, res) {
   });
 });
 
-/* POST route to generate a PDF */
-router.post('/generate-pdf', (req, res) => {
+router.post('/generate-pdf', async (req, res) => {
   const { data, context, user, timestamp } = req.body;
 
   if (!data || !context || !user || !timestamp) {
     return res.status(400).json({ error: 'Invalid request body' });
   }
 
-  // Create a new PDF document
-  const doc = new PDFDocument();
+  // Retrieve uuid from payload and use it to retrieve the product Identifier
+  productUuid = data.productUuid
+  productIdentifier = await getProductIdentifierFromUUID(data.productUuid);
 
-  // Define the output file path
-  const filePath = `./public/pdf/generated-pdf-${Date.now()}.pdf`;
+  console.log(productIdentifier);
 
-  // Pipe the PDF to a file
-  const writeStream = fs.createWriteStream(filePath);
-  doc.pipe(writeStream);
+  const token = await getAkeneoToken()
+  const baseURL = process.env.AKENEO_BASE_URL;
 
-  // Add content to the PDF
-  doc.fontSize(16).text('Generated PDF', { align: 'center' });
-  doc.moveDown();
+  // Create an empty PDF
+  const filePath = path.join(__dirname, 'empty.pdf');
+  fs.writeFileSync(filePath, '%PDF-1.4\n%EOF');
 
-  doc.fontSize(12).text(`Product UUID: ${data.productUuid}`);
-  doc.text(`Locale: ${context.locale}`);
-  doc.text(`Channel: ${context.channel}`);
-  doc.text(`User UUID: ${user.uuid}`);
-  doc.text(`Username: ${user.username}`);
-  doc.text(`User Groups: ${user.groups.join(', ')}`);
-  doc.text(`Timestamp: ${new Date(timestamp * 1000).toISOString()}`);
+  const form = new FormData();
+  form.append('file', fs.createReadStream(filePath));
+  form.append('product', JSON.stringify({
+    identifier: productIdentifier,
+    attribute: 'notice',
+    scope: null,
+    locale: null
+  }));
 
-  // Finalize the PDF
-  doc.end();
+  const headers = {
+    ...form.getHeaders(),
+    Authorization: `Bearer ${token}`
+  };
 
-  // Wait for the file to be written, then send the response
-  writeStream.on('finish', () => {
-    res.json({ message: 'PDF generated successfully', filePath });
-  });
+  const response = await axios.post(`${baseURL}/api/rest/v1/media-files`, form, { headers });
 
-  writeStream.on('error', (err) => {
-    console.error('Error writing PDF:', err);
-    res.status(500).json({ error: 'Failed to generate PDF' });
-  });
+  console.log('Upload successful:', response.data);
 });
 
 module.exports = router;
