@@ -10,20 +10,6 @@ const { getAkeneoToken } = require('../src/helpers/getAkeneoToken');
 const { getProductIdentifierFromUUID } = require('../src/helpers/getProductIdentifierFromUUID');
 const FormData = require('form-data');
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
-
-/* iframe extensions */
-router.get('/iframe-extension', function(req, res, next) {
-  res.render('iframeExtension', { title: 'iframe extension' });
-});
-
-router.get('/iframe-token-decode', function (req, res, next) {
-  res.render('iframeTokenDecode', { title: 'Iframe Token Decode' });
-});
-
 // Route to verify JWT token
 router.post('/verify-token', function(req, res) {
   const token = req.body.token;

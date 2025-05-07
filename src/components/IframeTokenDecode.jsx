@@ -29,7 +29,7 @@ const IframeExtension = () => {
   };
 
   const verifyToken = () => {
-    fetch('/verify-token', {
+    fetch('/api/verify-token', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token: jwt, secret }),
