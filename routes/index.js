@@ -10,7 +10,6 @@ const { getAkeneoToken } = require('../src/helpers/getAkeneoToken');
 const { getProductIdentifierFromUUID } = require('../src/helpers/getProductIdentifierFromUUID');
 const FormData = require('form-data');
 
-// Route to verify JWT token
 router.post('/verify-token', function(req, res) {
   const token = req.body.token;
   const secret = req.body.secret || process.env.IFRAME_EXTENSION_SECRET;
