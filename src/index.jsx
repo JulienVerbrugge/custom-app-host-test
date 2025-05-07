@@ -16,7 +16,6 @@ root.render(
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/iframe-extension" element={<IframeExtension />} />
-        <Route path="/iframe-token-decode" element={<IframeTokenDecode />} />
       </Routes>
     </Router>
   </ThemeProvider>
