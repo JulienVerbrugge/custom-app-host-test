@@ -15,9 +15,13 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
-/* iframe extension */
+/* iframe extensions */
 router.get('/iframe-extension', function(req, res, next) {
   res.render('iframeExtension', { title: 'iframe extension' });
+});
+
+router.get('/iframe-token-decode', function (req, res, next) {
+  res.render('iframeTokenDecode', { title: 'Iframe Token Decode' });
 });
 
 // Route to verify JWT token
