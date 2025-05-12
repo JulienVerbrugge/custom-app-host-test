@@ -19,6 +19,12 @@ router.post('/verify-token', function(req, res) {
 router.post('/generate-pdf', async (req, res) => {
   console.log('Received PDF generation request');
   console.log('You need to implement the logic to generate a PDF here');
+  
+  const { data, context, user, timestamp } = req.body;
+
+  if (!data || !context || !user || !timestamp) {
+    return res.status(400).json({ error: 'Invalid request body' });
+  }
 });
 
 module.exports = router;
