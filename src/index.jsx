@@ -3,7 +3,6 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import IframeExtension from './components/IframeExtension';
-import IframeTokenDecode from './components/IframeTokenDecode';
 import { ThemeProvider } from 'styled-components';
 import { connectorTheme } from 'akeneo-design-system';
 
