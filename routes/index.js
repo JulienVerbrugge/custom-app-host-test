@@ -84,4 +84,23 @@ router.post('/generate-pdf', async (req, res) => {
   }
 });
 
+router.get('/get-product-by-uuid/:uuid', async (req, res) => {
+  const uuid = req.params.uuid;
+  const token = await getAkeneoToken();
+  const baseURL = process.env.AKENEO_BASE_URL;
+
+  try {
+    const response = await axios.get(`${baseURL}/api/rest/v1/products-uuid/${uuid}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    res.status(200).json(response.data);
+  } catch (error) {
+    console.error('Error fetching product by UUID:', error.response?.data || error.message);
+    res.status(500).json({ error: 'An error occurred while fetching the product' });
+  }
+});
+
 module.exports = router;
