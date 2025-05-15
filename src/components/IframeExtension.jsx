@@ -56,12 +56,8 @@ const IframeExtension = () => {
             <Table.Row>
               <Table.Cell>SKU</Table.Cell>
               <Table.Cell>{productData.sku}</Table.Cell>
-            </Table.Row>
-            <Table.Row>
               <Table.Cell>Name</Table.Cell>
               <Table.Cell>{productData.name}</Table.Cell>
-            </Table.Row>
-            <Table.Row>
               <Table.Cell>Family</Table.Cell>
               <Table.Cell>{productData.family}</Table.Cell>
             </Table.Row>
