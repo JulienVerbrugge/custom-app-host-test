@@ -150,28 +150,19 @@ router.get('/get-mocked-external-data', async (req, res) => {
 
 router.get('/get-product-order-status/:uuid', async (req, res) => {
   const uuid = req.params.uuid;
-  const token = await getAkeneoToken();
-  const baseURL = process.env.AKENEO_BASE_URL;
 
   try {
-    const response = await axios.get(`${baseURL}/api/rest/v1/products-uuid/${uuid}`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-
-    const { data: orderData } = await axios.get('http://localhost:3000/api/get-mocked-order-status/' + response.data.values.sku[0].data);
+    const productData = await getProduct(uuid);
+    const { data: orderData } = await axios.get('http://localhost:3000/api/get-mocked-order-status/' + productData.values.sku[0].data);
 
     if (!orderData || typeof orderData !== 'object') {
       throw new Error('Invalid order data received');
     }
 
-    console.log('Order data:', orderData);
-
     res.status(200).json({
-      values: response.data.values,
-      categories: response.data.categories,
-      family: response.data.family,
+      values: productData.values,
+      categories: productData.categories,
+      family: productData.family,
       order: orderData.orders || []
     });
   } catch (error) {

@@ -37,7 +37,6 @@ const IframeExtension = () => {
 
   useEffect(() => {
     const uuid = parseQueryParams();
-    console.log('UUID from URL:', uuid);
     if (uuid) {
       fetchProductData(uuid);
     }
