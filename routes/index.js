@@ -84,16 +84,12 @@ router.get('/get-product-order-status/:uuid', async (req, res) => {
   const baseURL = process.env.AKENEO_BASE_URL;
 
   try {
-    const response = await axios.get(`${baseURL}/api/rest/v1/products-uuid/${uuid}`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
+    const productData = await getProduct(uuid);
 
     res.status(200).json({
-      values: response.data.values,
-      categories: response.data.categories,
-      family: response.data.family,
+      values: productData.values,
+      categories: productData.categories,
+      family: productData.family,
     });
   } catch (error) {
     console.error('Error fetching product by UUID:', error.response?.data || error.message);
