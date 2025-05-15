@@ -103,4 +103,14 @@ router.get('/get-product-by-uuid/:uuid', async (req, res) => {
   }
 });
 
+router.get('/get-mocked-external-data', async (req, res) => {
+  res.status(200).json({
+    stock: [
+      { quantity: 42, location: 'Warehouse A' },
+      { quantity: 0, location: 'Warehouse B' },
+      { quantity: 15, location: 'Warehouse C' }
+    ]
+  });
+});
+
 module.exports = router;
