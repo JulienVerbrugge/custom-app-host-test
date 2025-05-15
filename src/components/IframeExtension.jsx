@@ -14,7 +14,7 @@ const IframeExtension = () => {
   };
 
   const fetchProductData = (uuid) => {
-    fetch(`/api/get-product-by-uuid/${uuid}`, {
+    fetch(`/api/get-product-order-status/${uuid}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -24,9 +24,10 @@ const IframeExtension = () => {
       .then((data) => {
         const productInfo = {
           name: data.values?.name?.[0]?.data || 'N/A',
-          description: data.values?.description?.[0]?.data || 'N/A',
+          sku: data.values?.sku?.[0]?.data || 'N/A',
           category: data.categories?.[0] || 'N/A',
           family: data.family || 'N/A',
+          order: data.order,
         };
         setProductData(productInfo);      
       })
