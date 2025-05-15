@@ -96,6 +96,32 @@ router.post('/generate-pdf', async (req, res) => {
       });
       doc.moveDown(0.5);
     });
+
+    // === External Stock Data ===
+    try {
+      const { data: externalData } = await axios.get('http://localhost:3000/api/get-mocked-external-data');
+
+      const stockEntries = externalData.stock || [];
+
+      doc.moveDown(1);
+      doc.fontSize(12).text('Stock Information', { underline: true });
+      doc.moveDown(0.5);
+
+      doc.font('Courier-Bold').text('Location'.padEnd(20) + 'Quantity');
+      doc.font('Courier').text('-'.repeat(30));
+
+      stockEntries.forEach(entry => {
+        const location = entry.location.padEnd(20);
+        const quantity = entry.quantity.toString();
+        doc.text(`${location}${quantity}`);
+      });
+    } catch (error) {
+      console.error('Failed to fetch external stock data:', error.message);
+      doc.moveDown(1);
+      doc.fontSize(12).fillColor('red').text('⚠️ Failed to load stock data.', { underline: true });
+      doc.fillColor('black');
+    }
+
     
     doc.end();
 
