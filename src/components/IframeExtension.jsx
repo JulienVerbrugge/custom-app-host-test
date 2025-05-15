@@ -44,22 +44,35 @@ const IframeExtension = () => {
     }
   }, []);
 
+  const getStatusColor = (status) => {
+    switch (status.toLowerCase()) {
+      case 'shipped':
+        return '#528f5c';
+      case 'pending':
+        return '#c79032';
+      case 'cancelled':
+        return '#a94c3f';
+      default:
+        return 'black';
+    }
+  };
+
   return (
     <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
       {/* Product Information Section */}
       <div>
         <SectionTitle>
-          <SectionTitle.Title>Product Information</SectionTitle.Title>
+          <SectionTitle.Title style={{ color: "#58316f" }}>Product Information</SectionTitle.Title>
         </SectionTitle>
         <Table>
           <Table.Body>
             <Table.Row>
               <Table.Cell>SKU</Table.Cell>
-              <Table.Cell>{productData.sku}</Table.Cell>
+              <Table.Cell style={{ color: "#58316f" }}>{productData.sku}</Table.Cell>
               <Table.Cell>Name</Table.Cell>
-              <Table.Cell>{productData.name}</Table.Cell>
+              <Table.Cell style={{ color: "#58316f" }}>{productData.name}</Table.Cell>
               <Table.Cell>Family</Table.Cell>
-              <Table.Cell>{productData.family}</Table.Cell>
+              <Table.Cell style={{ color: "#58316f" }}>{productData.family}</Table.Cell>
             </Table.Row>
           </Table.Body>
         </Table>
@@ -68,7 +81,7 @@ const IframeExtension = () => {
       {/* Order Information Section */}
       <div>
         <SectionTitle>
-          <SectionTitle.Title>Order Information</SectionTitle.Title>
+          <SectionTitle.Title style={{ color: "#764194" }}>Order Information</SectionTitle.Title>
         </SectionTitle>
         <Table>
           <Table.Header>
@@ -82,7 +95,9 @@ const IframeExtension = () => {
                 <Table.Row key={index}>
                   <Table.Cell>{order.number}</Table.Cell>
                   <Table.Cell>{order.quantity}</Table.Cell>
-                  <Table.Cell>{order.status}</Table.Cell>
+                  <Table.Cell style={{ color: getStatusColor(order.status) }}>
+                    {order.status}
+                  </Table.Cell>
                 </Table.Row>
               ))
             ) : (
