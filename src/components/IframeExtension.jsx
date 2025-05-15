@@ -6,6 +6,7 @@ import {
 
 const IframeExtension = () => {
   const [productData, setProductData] = useState({});
+  const [orderData, setOrderData] = useState([]);
 
   // Parse query parameters from the URL
   const parseQueryParams = () => {
@@ -23,13 +24,12 @@ const IframeExtension = () => {
       .then((response) => response.json())
       .then((data) => {
         const productInfo = {
-          name: data.values?.name?.[0]?.data || 'N/A',
           sku: data.values?.sku?.[0]?.data || 'N/A',
-          category: data.categories?.[0] || 'N/A',
+          name: data.values?.name?.[0]?.data || 'N/A',
           family: data.family || 'N/A',
-          order: data.order,
         };
-        setProductData(productInfo);      
+        setProductData(productInfo);
+        setOrderData(data.order || []);
       })
       .catch((error) => {
         console.error('Error fetching product data:', error);
@@ -45,20 +45,57 @@ const IframeExtension = () => {
   }, []);
 
   return (
-    <div style={{ padding: '20px', display: 'flex', gap: '20px' }}>
-      {/* Product Data Section */}
-      <div style={{ flex: 1 }}>
+    <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      {/* Product Information Section */}
+      <div>
         <SectionTitle>
           <SectionTitle.Title>Product Information</SectionTitle.Title>
         </SectionTitle>
         <Table>
           <Table.Body>
-            {Object.entries(productData).map(([key, value]) => (
-              <Table.Row key={key}>
-                <Table.Cell>{key}</Table.Cell>
-                <Table.Cell>{value}</Table.Cell>
+            <Table.Row>
+              <Table.Cell>SKU</Table.Cell>
+              <Table.Cell>{productData.sku}</Table.Cell>
+            </Table.Row>
+            <Table.Row>
+              <Table.Cell>Name</Table.Cell>
+              <Table.Cell>{productData.name}</Table.Cell>
+            </Table.Row>
+            <Table.Row>
+              <Table.Cell>Family</Table.Cell>
+              <Table.Cell>{productData.family}</Table.Cell>
+            </Table.Row>
+          </Table.Body>
+        </Table>
+      </div>
+
+      {/* Order Information Section */}
+      <div>
+        <SectionTitle>
+          <SectionTitle.Title>Order Information</SectionTitle.Title>
+        </SectionTitle>
+        <Table>
+          <Table.Header>
+            <Table.HeaderCell>Order Number</Table.HeaderCell>
+            <Table.HeaderCell>Quantity</Table.HeaderCell>
+            <Table.HeaderCell>Status</Table.HeaderCell>
+          </Table.Header>
+          <Table.Body>
+            {orderData.length > 0 ? (
+              orderData.map((order, index) => (
+                <Table.Row key={index}>
+                  <Table.Cell>{order.number}</Table.Cell>
+                  <Table.Cell>{order.quantity}</Table.Cell>
+                  <Table.Cell>{order.status}</Table.Cell>
+                </Table.Row>
+              ))
+            ) : (
+              <Table.Row>
+                <Table.Cell colSpan={3} style={{ textAlign: 'center' }}>
+                  No orders available
+                </Table.Cell>
               </Table.Row>
-            ))}
+            )}
           </Table.Body>
         </Table>
       </div>

@@ -191,7 +191,7 @@ router.get('/get-mocked-order-status/:sku', async (req, res) => {
     orders: [
       { number: 123, quantity: 10, status: 'Shipped' },
       { number: 456, quantity: 5, status: 'Pending' },
-      { number: 789, quantity: 0, status: 'Cancelled' }
+      { number: 789, quantity: 22, status: 'Cancelled' }
     ]
   });
 });
