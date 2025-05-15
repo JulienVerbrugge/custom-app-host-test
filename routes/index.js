@@ -8,6 +8,7 @@ const axios = require('axios');
 const jwt = require('jsonwebtoken');
 const { getAkeneoToken } = require('../src/helpers/getAkeneoToken');
 const { getProductIdentifierFromUUID } = require('../src/helpers/getProductIdentifierFromUUID');
+const { getProduct } = require('../src/helpers/getProduct');
 const FormData = require('form-data');
 
 router.post('/verify-token', function(req, res) {
@@ -46,13 +47,56 @@ router.post('/generate-pdf', async (req, res) => {
     const writeStream = fs.createWriteStream(filePath);
     doc.pipe(writeStream);
 
-    doc.fontSize(12).text(`Product UUID: ${productUuid}`);
+    doc.fontSize(14).text('Product Summary', { align: 'center', underline: true });
+    doc.moveDown(1);
+    
+    doc.fontSize(12);
+    doc.text(`Product UUID: ${productUuid}`);
     doc.text(`Locale: ${context.locale}`);
     doc.text(`Channel: ${context.channel}`);
     doc.text(`User UUID: ${user.uuid}`);
     doc.text(`Username: ${user.username}`);
     doc.text(`User Groups: ${user.groups.join(', ')}`);
     doc.text(`Timestamp: ${new Date(timestamp * 1000).toISOString()}`);
+    doc.moveDown(1);
+    
+    const productData = await getProduct(productUuid);
+    
+    doc.text(`SKU: ${productData.values?.sku?.[0]?.data || 'N/A'}`);
+    doc.moveDown(1);
+    
+    doc.fontSize(12).text('ERP Names', { underline: true });
+    doc.moveDown(0.5);
+    
+    doc.font('Courier-Bold').text('Locale'.padEnd(15) + 'Scope'.padEnd(15) + 'Data');
+    doc.font('Courier').text('-'.repeat(60));
+    productData.values?.erp_name?.forEach(entry => {
+      const locale = (entry.locale || 'N/A').padEnd(15);
+      const scope = (entry.scope || 'N/A').padEnd(15);
+      const data = entry.data || '';
+      doc.text(`${locale}${scope}${data}`);
+    });
+    doc.moveDown(1);
+    
+    doc.fontSize(12).text('Descriptions', { underline: true });
+    doc.moveDown(0.5);
+    
+    doc.font('Courier-Bold').text('Locale'.padEnd(15) + 'Scope'.padEnd(15) + 'Data');
+    doc.font('Courier').text('-'.repeat(60));
+    productData.values?.description?.forEach(entry => {
+      const locale = (entry.locale || 'N/A').padEnd(15);
+      const scope = (entry.scope || 'N/A').padEnd(15);
+      const data = entry.data || '';
+      doc.text(`${locale}${scope}`, { continued: true });
+      doc.text(data, {
+        indent: 30,
+        align: 'left',
+        lineGap: 2,
+        continued: false
+      });
+      doc.moveDown(0.5);
+    });
+    
     doc.end();
 
     await new Promise(resolve => writeStream.on('finish', resolve));
