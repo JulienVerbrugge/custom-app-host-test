@@ -8,7 +8,6 @@ const IframeExtension = () => {
   const [productData, setProductData] = useState({});
   const [orderData, setOrderData] = useState([]);
 
-  // Parse query parameters from the URL
   const parseQueryParams = () => {
     const params = new URLSearchParams(window.location.search);
     return params.get('product[uuid]') || null;
@@ -59,7 +58,6 @@ const IframeExtension = () => {
 
   return (
     <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      {/* Product Information Section */}
       <div>
         <SectionTitle>
           <SectionTitle.Title style={{ color: "#58316f" }}>Product Information</SectionTitle.Title>
@@ -78,7 +76,6 @@ const IframeExtension = () => {
         </Table>
       </div>
 
-      {/* Order Information Section */}
       <div>
         <SectionTitle>
           <SectionTitle.Title style={{ color: "#764194" }}>Order Information</SectionTitle.Title>
