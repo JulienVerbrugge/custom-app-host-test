@@ -19,85 +19,80 @@ router.post('/generate-pdf', async (req, res) => {
   }
 
   try {
-    // Retrieve uuid from payload and use it to retrieve the product Identifier
-    productUuid = data.productUuid
-    productIdentifier = await getProductIdentifierFromUUID(data.productUuid);
-    const token = await getAkeneoToken()
+    const productUuid = data.productUuid;
+    const productIdentifier = await getProductIdentifierFromUUID(data.productUuid);
+    const token = await getAkeneoToken();
     const baseURL = process.env.AKENEO_BASE_URL;
 
-    // Generate the PDF with content
     const filePath = path.join(__dirname, 'generated.pdf');
-    const doc = new PDFDocument();
+    const doc = new PDFDocument({ margin: 50 });
     const writeStream = fs.createWriteStream(filePath);
     doc.pipe(writeStream);
 
-    doc.fontSize(14).text('Product Summary', { align: 'center', underline: true });
+    // Title
+    doc.fontSize(18).font('Helvetica-Bold').text('Product Summary', { align: 'center' });
     doc.moveDown(1);
-    
-    doc.fontSize(12);
-    doc.text(`Product UUID: ${productUuid}`);
+
+/*     // User and Context Information
+    doc.fontSize(12).font('Helvetica').text(`Product UUID: ${productUuid}`);
     doc.text(`Locale: ${context.locale}`);
     doc.text(`Channel: ${context.channel}`);
     doc.text(`User UUID: ${user.uuid}`);
     doc.text(`Username: ${user.username}`);
     doc.text(`User Groups: ${user.groups.join(', ')}`);
     doc.text(`Timestamp: ${new Date(timestamp * 1000).toISOString()}`);
-    doc.moveDown(1);
-    
+    doc.moveDown(1); */
+
     const productData = await getProduct(productUuid);
-    
-    doc.text(`SKU: ${productData.values?.sku?.[0]?.data || 'N/A'}`);
+
+    // SKU Section
+    doc.fontSize(14).font('Helvetica-Bold').text('SKU Information', { underline: true });
+    doc.fontSize(12).font('Helvetica').text(`SKU: ${productData.values?.sku?.[0]?.data || 'N/A'}`);
     doc.moveDown(1);
-    
-    doc.fontSize(12).text('ERP Names', { underline: true });
+
+    // ERP Names Table
+    doc.fontSize(14).font('Helvetica-Bold').text('ERP Names', { underline: true });
     doc.moveDown(0.5);
-    
-    doc.font('Courier-Bold').text('Locale'.padEnd(15) + 'Scope'.padEnd(15) + 'Data');
+    doc.font('Courier-Bold').text('Locale'.padEnd(10) + 'Scope'.padEnd(10) + 'Data');
     doc.font('Courier').text('-'.repeat(60));
     productData.values?.erp_name?.forEach(entry => {
       const locale = (entry.locale || 'N/A').padEnd(15);
       const scope = (entry.scope || 'N/A').padEnd(15);
       const data = entry.data || '';
-      doc.text(`${locale}${scope}${data}`);
+      doc.fontSize(10).text(`${locale}${scope}${data}`);
     });
     doc.moveDown(1);
-    
-    doc.fontSize(12).text('Descriptions', { underline: true });
-    doc.moveDown(0.5);
-    
-    doc.font('Courier-Bold').text('Locale'.padEnd(15) + 'Scope'.padEnd(15) + 'Data');
-    doc.font('Courier').text('-'.repeat(60));
-    productData.values?.description?.forEach(entry => {
-      const locale = (entry.locale || 'N/A').padEnd(15);
-      const scope = (entry.scope || 'N/A').padEnd(15);
-      const data = entry.data || '';
-      doc.text(`${locale}${scope}`, { continued: true });
-      doc.text(data, {
-        indent: 30,
-        align: 'left',
-        lineGap: 2,
-        continued: false
-      });
-      doc.moveDown(0.5);
-    });
 
-    // === External Stock Data ===
+    // Descriptions Table
+    doc.fontSize(14).font('Helvetica-Bold').text('Descriptions', { underline: true });
+    doc.moveDown(0.5);
+    doc.font('Courier').text('-'.repeat(60));
+    const descriptionData = productData.values?.description?.[0]?.data || '';
+    const sanitizedData = descriptionData.replace(/<\/?p>/g, "");
+    doc.fontSize(10).text(sanitizedData, {
+      indent: 30,
+      align: 'left',
+      lineGap: 2,
+      continued: false
+    });
+    doc.moveDown(0.5);
+
+    // External Stock Data
     try {
       const { data: externalData } = await axios.get('http://localhost:3000/api/get-mocked-external-data');
 
       const stockEntries = externalData.stock || [];
 
       doc.moveDown(1);
-      doc.fontSize(12).text('Stock Information', { underline: true });
+      doc.fontSize(14).font('Helvetica-Bold').text('Stock Information', { underline: true });
       doc.moveDown(0.5);
-
       doc.font('Courier-Bold').text('Location'.padEnd(20) + 'Quantity');
       doc.font('Courier').text('-'.repeat(30));
 
       stockEntries.forEach(entry => {
         const location = entry.location.padEnd(20);
         const quantity = entry.quantity.toString();
-        doc.text(`${location}${quantity}`);
+        doc.fontSize(10).text(`${location}${quantity}`);
       });
     } catch (error) {
       console.error('Failed to fetch external stock data:', error.message);
@@ -105,8 +100,25 @@ router.post('/generate-pdf', async (req, res) => {
       doc.fontSize(12).fillColor('red').text('⚠️ Failed to load stock data.', { underline: true });
       doc.fillColor('black');
     }
+    doc.moveDown(1);
 
-    
+    // Images Section
+    doc.fontSize(14).font('Helvetica-Bold').text('Images', { underline: true });
+    const imagesDir = path.join(__dirname, '../public/images');
+    const imageFiles = fs.readdirSync(imagesDir);
+
+    imageFiles.forEach((file, index) => {
+      const imagePath = path.join(imagesDir, file);
+      doc.image(imagePath, {
+        fit: [150, 100],
+        align: 'left',
+        valign: 'top',
+        x: 50 + (index * 160),
+        y: 600,
+      });
+    });
+
+    // End the document
     doc.end();
 
     await new Promise(resolve => writeStream.on('finish', resolve));
