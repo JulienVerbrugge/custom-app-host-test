@@ -2,11 +2,14 @@ import React, { useState, useEffect } from 'react';
 import {
   SectionTitle,
   Table,
+  Button,
 } from 'akeneo-design-system';
 
 const IframeExtension = () => {
   const [productData, setProductData] = useState({});
   const [orderData, setOrderData] = useState([]);
+  const [contextData, setContextData] = useState(null);
+  const [userData, setUserData] = useState(null);
 
   const parseQueryParams = () => {
     const params = new URLSearchParams(window.location.search);
@@ -35,11 +38,85 @@ const IframeExtension = () => {
       });
   };
 
+  const requestContext = () => {
+    console.log('Requesting context from parent window...');
+    window.parent.postMessage(
+      {
+        type: 'request_context'
+      },
+      "*"
+    );
+    console.log('PostMessage sent to parent');
+  };
+
+  const reloadParent = () => {
+    console.log('Requesting parent window reload...');
+    window.parent.postMessage(
+      {
+        type: 'reload_parent'
+      },
+      "*"
+    );
+    console.log('Reload PostMessage sent to parent');
+  };
+
+  const requestJwt = () => {
+    console.log('Requesting JWT from parent window...');
+    window.parent.postMessage(
+      {
+        type: 'request_jwt'
+      },
+      "*"
+    );
+    console.log('JWT request PostMessage sent to parent');
+  };
+
   useEffect(() => {
     const uuid = parseQueryParams();
     if (uuid) {
       fetchProductData(uuid);
     }
+
+    // Counter to track if event listener is working
+    let messageCount = 0;
+
+    const handleMessage = (event) => {
+      messageCount++;
+      console.log(`🔔 MESSAGE #${messageCount} RECEIVED!`);
+      console.log('📦 Full event:', event);
+      console.log('📋 Message data:', event.data);
+      console.log('🌐 Message origin:', event.origin);
+      console.log('📍 Message source:', event.source);
+      console.log('---');
+
+      if (event.data && typeof event.data === 'object') {
+        if (event.data.context && event.data.user) {
+          console.log('✅ Valid Akeneo context received!');
+          console.log('Context:', event.data.context);
+          console.log('User:', event.data.user);
+          setContextData(event.data.context);
+          setUserData(event.data.user);
+        } else {
+          console.log('⚠️ Message structure:', Object.keys(event.data));
+        }
+      } else {
+        console.log('⚠️ Message is not an object:', typeof event.data);
+      }
+    };
+
+    console.log('✅ Message event listener attached!');
+    window.addEventListener('message', handleMessage);
+
+    // Test the listener by sending a message to ourselves
+    console.log('🧪 Testing message listener with self-message...');
+    setTimeout(() => {
+      window.postMessage({ test: 'self-message', timestamp: Date.now() }, '*');
+    }, 500);
+
+    return () => {
+      console.log('❌ Message event listener removed');
+      window.removeEventListener('message', handleMessage);
+    };
   }, []);
 
   const getStatusColor = (status) => {
@@ -105,6 +182,70 @@ const IframeExtension = () => {
             )}
           </Table.Body>
         </Table>
+      </div>
+
+      <div>
+        <SectionTitle>
+          <SectionTitle.Title style={{ color: "#8b4c9e" }}>Akeneo Context & Actions</SectionTitle.Title>
+        </SectionTitle>
+        <div style={{ display: 'flex', gap: '10px', margin: '20px 0', flexWrap: 'wrap' }}>
+          <Button onClick={requestContext}>
+            Request Context via PostMessage
+          </Button>
+          <Button onClick={reloadParent} level="secondary">
+            Reload Parent Window
+          </Button>
+          <Button onClick={requestJwt} level="tertiary">
+            Request JWT
+          </Button>
+        </div>
+        {contextData && (
+          <>
+            <div style={{ marginBottom: '20px' }}>
+              <strong>Context Information:</strong>
+              <Table>
+                <Table.Body>
+                  <Table.Row>
+                    <Table.Cell>Locale</Table.Cell>
+                    <Table.Cell style={{ color: "#8b4c9e" }}>{contextData.locale || 'N/A'}</Table.Cell>
+                  </Table.Row>
+                  <Table.Row>
+                    <Table.Cell>Channel</Table.Cell>
+                    <Table.Cell style={{ color: "#8b4c9e" }}>{contextData.channel || 'N/A'}</Table.Cell>
+                  </Table.Row>
+                </Table.Body>
+              </Table>
+            </div>
+            {userData && (
+              <div>
+                <strong>User Information:</strong>
+                <Table>
+                  <Table.Body>
+                    <Table.Row>
+                      <Table.Cell>UUID</Table.Cell>
+                      <Table.Cell style={{ color: "#8b4c9e" }}>{userData.uuid || 'N/A'}</Table.Cell>
+                    </Table.Row>
+                    <Table.Row>
+                      <Table.Cell>Username</Table.Cell>
+                      <Table.Cell style={{ color: "#8b4c9e" }}>{userData.username || 'N/A'}</Table.Cell>
+                    </Table.Row>
+                    <Table.Row>
+                      <Table.Cell>Groups</Table.Cell>
+                      <Table.Cell style={{ color: "#8b4c9e" }}>
+                        {userData.groups ? userData.groups.join(', ') : 'N/A'}
+                      </Table.Cell>
+                    </Table.Row>
+                  </Table.Body>
+                </Table>
+              </div>
+            )}
+          </>
+        )}
+        {!contextData && (
+          <p style={{ fontStyle: 'italic', color: '#666' }}>
+            Click the button above to request context from Akeneo PIM
+          </p>
+        )}
       </div>
     </div>
   );
