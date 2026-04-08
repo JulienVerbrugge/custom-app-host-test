@@ -8,7 +8,7 @@ import { color, connectorTheme } from 'akeneo-design-system';
 
 const HomePage = () => (
   <div>
-    Hello <span style={{ color: "#58316f"}}world ></span>
+    Hello <span style={{ color: "#58316f"}}>world</span>
     <br />
     <a href="/iframe-extension">Iframe Extension</a>
   </div>
