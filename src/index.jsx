@@ -4,11 +4,11 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import IframeExtension from './components/IframeExtension';
 import { ThemeProvider } from 'styled-components';
-import { connectorTheme } from 'akeneo-design-system';
+import { color, connectorTheme } from 'akeneo-design-system';
 
 const HomePage = () => (
   <div>
-    Hello world
+    Hello <span style={{ color: "#58316f"}}world ></span>
     <br />
     <a href="/iframe-extension">Iframe Extension</a>
   </div>
